@@ -11,6 +11,7 @@ ARCH=${ARCH:-"x64"}
 TARGET_OS=${TARGET_OS:-""}
 VCPKG_TRIPLET=${VCPKG_TRIPLET:-""}
 EXTRA_CFLAGS=${EXTRA_CFLAGS:-""}
+SERVER_URL=${SERVER_URL:-"127.0.0.1"}
 BUNDLED_FONT=""
 if [[ -f "NotoSansJP-Regular.otf" ]]; then
 	BUNDLED_FONT="--bundled-font=NotoSansJP-Regular.otf"
