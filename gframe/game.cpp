@@ -5487,7 +5487,7 @@ bool Game::openVideo(std::string filename, bool audio, bool loop, int type) {
 			avcodec_parameters_to_context(audioCodecCtx, formatCtx2->streams[audioStreamIndex]->codecpar);
 			const AVCodec* audioCodec = avcodec_find_decoder(audioCodecCtx->codec_id);
 			avcodec_open2(audioCodecCtx, audioCodec, nullptr);
-			int audioChannels = audioCodecCtx->channels;
+			int audioChannels = audioCodecCtx->ch_layout.nb_channels;
 			audioFrameDuration = (double)audioChannels / (double)(formatCtx[type]->streams[audioStreamIndex]->codecpar->sample_rate);
 		}
 		videoCodecCtx[type] = avcodec_alloc_context3(nullptr);
@@ -5601,10 +5601,10 @@ bool Game::PlayVideo(bool audio, bool loop, int type) {
 				if (avcodec_receive_frame(audioCodecCtx, audioFrame) >= 0) {
 					// Success! We got an audio frame. Process it into our buffer.
 					int numSamples = audioFrame->nb_samples;
-					if (audioBuffer.size() + numSamples * audioCodecCtx->channels > 4096)
-						audioBuffer.reserve(audioBuffer.size() + numSamples * audioCodecCtx->channels);
+					if (audioBuffer.size() + numSamples * audioCodecCtx->ch_layout.nb_channels > 4096)
+						audioBuffer.reserve(audioBuffer.size() + numSamples * audioCodecCtx->ch_layout.nb_channels);
 					for (int i = 0; i < numSamples; i++) {
-						for (int ch = 0; ch < audioCodecCtx->channels; ch++) {
+						for (int ch = 0; ch < audioCodecCtx->ch_layout.nb_channels; ch++) {
 							if (audioCodecCtx->sample_fmt == AV_SAMPLE_FMT_FLTP) {
 								float* src = reinterpret_cast<float*>(audioFrame->data[ch]);
 								audioBuffer.push_back(static_cast<int16_t>(src[i] * 32767.0f));
@@ -5626,7 +5626,7 @@ bool Game::PlayVideo(bool audio, bool loop, int type) {
 			videosound.stop(); // Stop audio playback
 	} else if (videosound.getStatus() != sf::Sound::Playing) {
 		if (!audioBuffer.empty()) {
-			videosoundBuffer.loadFromSamples(audioBuffer.data(), audioBuffer.size(), audioCodecCtx->channels, audioCodecCtx->sample_rate);
+			videosoundBuffer.loadFromSamples(audioBuffer.data(), audioBuffer.size(), audioCodecCtx->ch_layout.nb_channels, audioCodecCtx->sample_rate);
 			videosound.setBuffer(videosoundBuffer);
 			videosound.setVolume(gGameConfig->soundVolume);
 			videosound.play();
