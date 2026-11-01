@@ -26,7 +26,6 @@ jobs:
       VS_GEN: vs2022
       SERVER_URL: 127.0.0.1
       DXSDK_DIR: C:/d3d9sdk/
-      VCPKG_ROOT: C:/vcpkg
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,15 +42,20 @@ jobs:
       - name: Install x64 vcpkg dependencies
         shell: pwsh
         run: |
-          git clone --depth 1 https://github.com/microsoft/vcpkg.git C:\vcpkg
-          & C:\vcpkg\bootstrap-vcpkg.bat -disableMetrics
-          & C:\vcpkg\vcpkg.exe install fmt curl freetype sqlite3 libevent libgit2 libssh2 openssl libpng bzip2 zlib libjpeg-turbo flac libvorbis libogg openal-soft --triplet x64-windows-static --host-triplet x64-windows ffmpeg:x64-windows
-          & C:\vcpkg\vcpkg.exe integrate install
+          $root = Join-Path $env:RUNNER_TEMP "ydm-vcpkg"
+          git clone --depth 1 https://github.com/microsoft/vcpkg.git $root
+          "VCPKG_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Append
+          & "$root\bootstrap-vcpkg.bat" -disableMetrics
+          & "$root\vcpkg.exe" install fmt curl freetype sqlite3 libevent libgit2 libssh2 openssl libpng bzip2 zlib libjpeg-turbo --triplet x64-windows-static
+          if ($LASTEXITCODE -ne 0) { throw "Static client dependencies failed to install" }
+          & "$root\vcpkg.exe" install ffmpeg --triplet x64-windows
+          if ($LASTEXITCODE -ne 0) { throw "FFmpeg dependencies failed to install" }
+          & "$root\vcpkg.exe" integrate install
 
       - name: Stage FFmpeg headers, import libraries and runtime DLLs
         shell: pwsh
         run: |
-          $root = "C:/vcpkg/installed/x64-windows"
+          $root = "$env:VCPKG_ROOT/installed/x64-windows"
           $destination = "ffmpeg"
           New-Item -ItemType Directory -Force -Path "$destination/include", "$destination/lib", "$destination/bin" | Out-Null
           $headers = @("libavcodec", "libavdevice", "libavfilter", "libavformat", "libavutil", "libswresample", "libswscale")
@@ -65,20 +69,6 @@ jobs:
           Get-ChildItem "$root/bin/*.dll" | Copy-Item -Destination "$destination/bin" -Force
           if (-not (Test-Path "$destination/include/libavcodec/avcodec.h")) { throw "FFmpeg headers are missing" }
           if (-not (Test-Path "$destination/lib/avcodec.lib")) { throw "FFmpeg import library is missing" }
-      - name: Stage SFML audio headers
-        shell: pwsh
-        run: |
-          $root = "C:/vcpkg/installed/x64-windows-static"
-          $headers = "sfAudio/external/headers"
-          New-Item -ItemType Directory -Force -Path "$headers/OpenAL" | Out-Null
-          Copy-Item -Path "$root/include/AL/*" -Destination "$headers/OpenAL" -Recurse -Force
-          foreach ($name in @("FLAC", "vorbis", "ogg")) {
-            Copy-Item -Path "$root/include/$name" -Destination "$headers" -Recurse -Force
-          }
-          if (-not (Test-Path "$headers/OpenAL/al.h")) { throw "OpenAL headers are missing" }
-          if (-not (Test-Path "$headers/FLAC/stream_decoder.h")) { throw "FLAC headers are missing" }
-          if (-not (Test-Path "$headers/vorbis/vorbisfile.h")) { throw "Vorbis headers are missing" }
-
       - name: Build matching client and core
         shell: bash
         run: |
