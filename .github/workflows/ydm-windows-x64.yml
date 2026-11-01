@@ -53,7 +53,7 @@ jobs:
           $url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-11-01-12-49/ffmpeg-master-latest-win64-lgpl-shared.zip"
           Invoke-WebRequest -Uri $url -OutFile ffmpeg.zip
           Expand-Archive -Path ffmpeg.zip -DestinationPath .
-          $folder = Get-ChildItem -Directory | Where-Object { $_.Name -like "ffmpeg-master-latest-win64-lgpl-shared*" } | Select-Object -First 1
+          $folder = Get-ChildItem -Directory | Where-Object { $_.Name -like "ffmpeg-*win64-lgpl-shared*" } | Select-Object -First 1
           if (-not $folder) { throw "FFmpeg archive folder was not found" }
           Move-Item $folder.FullName ffmpeg
           if (-not (Test-Path "ffmpeg/include/libavcodec/avcodec.h")) { throw "FFmpeg development headers are missing" }
