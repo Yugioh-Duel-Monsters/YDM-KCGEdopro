@@ -287,7 +287,7 @@ local ygopro_config=function(static_core)
     	-- links "opencv_world470"
     	includedirs{ "../ffmpeg/include" }
     	libdirs{ "../ffmpeg/lib" }
-		links { "avcodec", "avdevice", "avfilter", "avformat", "avutil", "postproc", "swresample", "swscale" }
+		links { "avcodec", "avdevice", "avfilter", "avformat", "avutil", "swresample", "swscale" }
 
 	filter {}
 	if _OPTIONS["prebuilt-core"] then
