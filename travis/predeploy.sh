@@ -109,6 +109,7 @@ if [[ "$PLATFORM" == "windows" ]]; then
 	fi
 	copy_if_exists ygoprodll.exe
 	copy_if_exists Edopro-KCG.exe
+	copy_if_exists ocgcore.dll
 	compress_if_exist ygoprodll.exe
 	compress_if_exist Edopro-KCG.exe
 	copy_compressed_if_exists ygoprodll.pdb
