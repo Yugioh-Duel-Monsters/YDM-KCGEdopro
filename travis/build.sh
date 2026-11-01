@@ -24,7 +24,7 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
 		MSBUILD_PLATFORM=x64
 	fi
 	VS_GEN=${VS_GEN:-vs2022}
-	./premake5 "$VS_GEN" --architecture="$ARCH" $BUNDLED_FONT --no-core=true --sound=miniaudio --no-joystick=true --pics=\\"$PICS_URL\\" --fields=\\"$FIELDS_URL\\" --covers=\\"$COVERS_URL\\" --discord=\\"$DISCORD_APP_ID\\" --update-url=\\"$UPDATE_URL\\" --server_url=\\\"$SERVER_URL\\\"
+	./premake5 "$VS_GEN" --architecture="$ARCH" $BUNDLED_FONT --no-core=true --sound=miniaudio --no-joystick=true --pics=\\"$PICS_URL\\" --fields=\\"$FIELDS_URL\\" --covers=\\"$COVERS_URL\\" --discord=\\"$DISCORD_APP_ID\\" --server_url=\\\"$SERVER_URL\\\"
 	msbuild.exe -m -p:Configuration=$BUILD_CONFIG -p:Platform=$MSBUILD_PLATFORM ./build/ygo.sln -t:ygoprodll -verbosity:minimal -p:EchoOff=true
 	exit 0
 fi
