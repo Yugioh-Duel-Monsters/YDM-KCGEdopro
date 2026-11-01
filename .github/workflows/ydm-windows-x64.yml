@@ -45,7 +45,7 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/microsoft/vcpkg.git C:\vcpkg
           & C:\vcpkg\bootstrap-vcpkg.bat -disableMetrics
-          & C:\vcpkg\vcpkg.exe install fmt curl freetype sqlite3 libevent libgit2 libssh2 openssl libpng bzip2 zlib libjpeg-turbo --triplet x64-windows-static --host-triplet x64-windows ffmpeg:x64-windows
+          & C:\vcpkg\vcpkg.exe install fmt curl freetype sqlite3 libevent libgit2 libssh2 openssl libpng bzip2 zlib libjpeg-turbo flac libvorbis libogg openal-soft --triplet x64-windows-static --host-triplet x64-windows ffmpeg:x64-windows
           & C:\vcpkg\vcpkg.exe integrate install
 
       - name: Stage FFmpeg headers, import libraries and runtime DLLs
@@ -65,6 +65,20 @@ jobs:
           Get-ChildItem "$root/bin/*.dll" | Copy-Item -Destination "$destination/bin" -Force
           if (-not (Test-Path "$destination/include/libavcodec/avcodec.h")) { throw "FFmpeg headers are missing" }
           if (-not (Test-Path "$destination/lib/avcodec.lib")) { throw "FFmpeg import library is missing" }
+      - name: Stage SFML audio headers
+        shell: pwsh
+        run: |
+          $root = "C:/vcpkg/installed/x64-windows-static"
+          $headers = "sfAudio/external/headers"
+          New-Item -ItemType Directory -Force -Path "$headers/OpenAL" | Out-Null
+          Copy-Item -Path "$root/include/AL/*" -Destination "$headers/OpenAL" -Recurse -Force
+          foreach ($name in @("FLAC", "vorbis", "ogg")) {
+            Copy-Item -Path "$root/include/$name" -Destination "$headers" -Recurse -Force
+          }
+          if (-not (Test-Path "$headers/OpenAL/al.h")) { throw "OpenAL headers are missing" }
+          if (-not (Test-Path "$headers/FLAC/stream_decoder.h")) { throw "FLAC headers are missing" }
+          if (-not (Test-Path "$headers/vorbis/vorbisfile.h")) { throw "Vorbis headers are missing" }
+
       - name: Build matching client and core
         shell: bash
         run: |
