@@ -47,7 +47,7 @@ jobs:
           git clone --depth 1 https://github.com/microsoft/vcpkg.git $root
           "VCPKG_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Append
           & "$root\bootstrap-vcpkg.bat" -disableMetrics
-          & "$root\vcpkg.exe" install fmt curl freetype sqlite3 libevent libgit2 libssh2 openssl libpng bzip2 zlib libjpeg-turbo nlohmann-json openal-soft flac libvorbis --triplet x64-windows-static
+          & "$root\vcpkg.exe" install fmt curl freetype sqlite3 libevent libgit2 libssh2 openssl libpng bzip2 zlib libjpeg-turbo nlohmann-json openal-soft libflac libvorbis --triplet x64-windows-static
           if ($LASTEXITCODE -ne 0) { throw "Static client dependencies failed to install" }
           & "$root\vcpkg.exe" install ffmpeg --triplet x64-windows
           if ($LASTEXITCODE -ne 0) { throw "FFmpeg dependencies failed to install" }
