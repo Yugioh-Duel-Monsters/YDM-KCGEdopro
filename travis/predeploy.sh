@@ -108,8 +108,14 @@ if [[ "$PLATFORM" == "windows" ]]; then
 		strip_if_exists ygoprodll.exe
 	fi
 	copy_if_exists ygoprodll.exe
+	copy_if_exists Edopro-KCG.exe
 	compress_if_exist ygoprodll.exe
+	compress_if_exist Edopro-KCG.exe
 	copy_compressed_if_exists ygoprodll.pdb
+	copy_compressed_if_exists Edopro-KCG.pdb
+	if [[ -d ffmpeg/bin ]]; then
+		cp ffmpeg/bin/*.dll deploy/
+	fi
 fi
 if [[ "$PLATFORM" == "linux" ]]; then
 	if [[ "$ARCH" == "arm64" ]]; then
