@@ -147,6 +147,9 @@ local ygopro_config=function(static_core)
 				if _OPTIONS["use-mpg123"] then
 					links { "mpg123" }
 				end
+			filter { "system:windows", "action:vs*" }
+				libdirs "../audio/lib"
+				links { "FLAC", "vorbisfile", "vorbis", "ogg", "OpenAL32" }
 			filter {}
 		end
 		if sounds.miniaudio then
