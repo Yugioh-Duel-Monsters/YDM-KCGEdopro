@@ -45,21 +45,26 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/microsoft/vcpkg.git C:\vcpkg
           & C:\vcpkg\bootstrap-vcpkg.bat -disableMetrics
-          & C:\vcpkg\vcpkg.exe install fmt curl freetype sqlite3 libevent libgit2 libssh2 openssl libpng bzip2 zlib libjpeg-turbo --triplet x64-windows-static --host-triplet x64-windows
+          & C:\vcpkg\vcpkg.exe install fmt curl freetype sqlite3 libevent libgit2 libssh2 openssl libpng bzip2 zlib libjpeg-turbo --triplet x64-windows-static --host-triplet x64-windows ffmpeg:x64-windows
           & C:\vcpkg\vcpkg.exe integrate install
 
-      - name: Install FFmpeg development libraries
+      - name: Stage FFmpeg headers, import libraries and runtime DLLs
         shell: pwsh
         run: |
-          $url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-11-01-12-49/ffmpeg-master-latest-win64-lgpl-shared.zip"
-          Invoke-WebRequest -Uri $url -OutFile ffmpeg.zip
-          Expand-Archive -Path ffmpeg.zip -DestinationPath .
-          $folder = Get-ChildItem -Directory | Where-Object { $_.Name -like "ffmpeg-*win64-lgpl-shared*" } | Select-Object -First 1
-          if (-not $folder) { throw "FFmpeg archive folder was not found" }
-          Move-Item $folder.FullName ffmpeg
-          if (-not (Test-Path "ffmpeg/include/libavcodec/avcodec.h")) { throw "FFmpeg development headers are missing" }
-          if (-not (Test-Path "ffmpeg/lib/avcodec.lib")) { throw "FFmpeg import libraries are missing" }
-
+          $root = "C:\\vcpkg\\installed\\x64-windows"
+          $destination = "ffmpeg"
+          New-Item -ItemType Directory -Force -Path "$destination/include", "$destination/lib", "$destination/bin" | Out-Null
+          $headers = @("libavcodec", "libavdevice", "libavfilter", "libavformat", "libavutil", "libswresample", "libswscale")
+          foreach ($name in $headers) {
+            Copy-Item -Path "$root/include/$name" -Destination "$destination/include" -Recurse -Force
+          }
+          $libraries = @("avcodec.lib", "avdevice.lib", "avfilter.lib", "avformat.lib", "avutil.lib", "swresample.lib", "swscale.lib")
+          foreach ($name in $libraries) {
+            Copy-Item -Path "$root/lib/$name" -Destination "$destination/lib" -Force
+          }
+          Get-ChildItem "$root/bin/*.dll" | Copy-Item -Destination "$destination/bin" -Force
+          if (-not (Test-Path "$destination/include/libavcodec/avcodec.h")) { throw "FFmpeg headers are missing" }
+          if (-not (Test-Path "$destination/lib/avcodec.lib")) { throw "FFmpeg import library is missing" }
       - name: Build matching client and core
         shell: bash
         run: |
