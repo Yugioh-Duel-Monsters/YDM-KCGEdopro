@@ -46,6 +46,7 @@ jobs:
           git clone --depth 1 https://github.com/microsoft/vcpkg.git C:\vcpkg
           & C:\vcpkg\bootstrap-vcpkg.bat -disableMetrics
           & C:\vcpkg\vcpkg.exe install fmt curl freetype sqlite3 libevent libgit2 libssh2 openssl libpng bzip2 zlib libjpeg-turbo --triplet x64-windows-static --host-triplet x64-windows
+          & C:\vcpkg\vcpkg.exe integrate install
 
       - name: Install FFmpeg development libraries
         shell: pwsh
