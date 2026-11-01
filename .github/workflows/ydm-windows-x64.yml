@@ -1,0 +1,76 @@
+name: YDM Windows x64 build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - "gframe/**"
+      - "ocgcore"
+      - "travis/**"
+      - "irrlicht/**"
+      - "premake5.lua"
+      - ".github/workflows/ydm-windows-x64.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+    env:
+      TRAVIS_OS_NAME: windows
+      TARGET_OS: windows
+      ARCH: x64
+      BUILD_CONFIG: Release
+      VS_GEN: vs2022
+      SERVER_URL: 127.0.0.1
+      DXSDK_DIR: C:/d3d9sdk/
+      VCPKG_ROOT: C:/vcpkg
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Install local client dependencies
+        shell: bash
+        run: |
+          ./travis/install-local-dependencies.sh
+          ./travis/get-windows-d3d9sdk.sh
+
+      - name: Install x64 vcpkg dependencies
+        shell: pwsh
+        run: |
+          git clone --depth 1 https://github.com/microsoft/vcpkg.git C:\vcpkg
+          & C:\vcpkg\bootstrap-vcpkg.bat -disableMetrics
+          & C:\vcpkg\vcpkg.exe install fmt curl freetype sqlite3 libevent libgit2 libssh2 openssl libpng bzip2 zlib libjpeg-turbo --triplet x64-windows-static --host-triplet x64-windows
+
+      - name: Install FFmpeg development libraries
+        shell: pwsh
+        run: |
+          $url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-11-01-12-49/ffmpeg-master-latest-win64-lgpl-shared.zip"
+          Invoke-WebRequest -Uri $url -OutFile ffmpeg.zip
+          Expand-Archive -Path ffmpeg.zip -DestinationPath .
+          $folder = Get-ChildItem -Directory | Where-Object { $_.Name -like "ffmpeg-master-latest-win64-lgpl-shared*" } | Select-Object -First 1
+          if (-not $folder) { throw "FFmpeg archive folder was not found" }
+          Move-Item $folder.FullName ffmpeg
+          if (-not (Test-Path "ffmpeg/include/libavcodec/avcodec.h")) { throw "FFmpeg development headers are missing" }
+          if (-not (Test-Path "ffmpeg/lib/avcodec.lib")) { throw "FFmpeg import libraries are missing" }
+
+      - name: Build matching client and core
+        shell: bash
+        run: |
+          ./travis/install-premake5.sh
+          ./travis/build.sh
+
+      - name: Package Windows x64 client
+        shell: bash
+        run: ./travis/predeploy.sh windows
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: YDM-EDOPro-Windows-x64
+          path: deploy/
+          if-no-files-found: error
