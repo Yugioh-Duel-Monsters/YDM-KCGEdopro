@@ -6,6 +6,7 @@ on:
     branches: [master]
     paths:
       - "gframe/**"
+      - "sfAudio/**"
       - "ocgcore"
       - "travis/**"
       - "irrlicht/**"
