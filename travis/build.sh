@@ -24,7 +24,7 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
 		MSBUILD_PLATFORM=x64
 	fi
 	VS_GEN=${VS_GEN:-vs2022}
-	./premake5 "$VS_GEN" --architecture="$ARCH" $BUNDLED_FONT --no-core=true --sound=miniaudio,sfml --no-joystick=true --pics=\\"$PICS_URL\\" --fields=\\"$FIELDS_URL\\" --covers=\\"$COVERS_URL\\" --discord=\\"$DISCORD_APP_ID\\" --update-url=\\"$UPDATE_URL\\"
+	./premake5 "$VS_GEN" --architecture="$ARCH" $BUNDLED_FONT --no-core=true --sound=miniaudio,sfml --no-joystick=true --pics=\\"$PICS_URL\\" --fields=\\"$FIELDS_URL\\" --covers=\\"$COVERS_URL\\" --discord=\\"$DISCORD_APP_ID\\" --update-url=\\"$UPDATE_URL\\" --server_url=\\\"$SERVER_URL\\\"
 	msbuild.exe -m -p:Configuration=$BUILD_CONFIG -p:Platform=$MSBUILD_PLATFORM ./build/ygo.sln -t:ygoprodll -verbosity:minimal -p:EchoOff=true
 	exit 0
 fi
@@ -51,7 +51,7 @@ fi
 if [[ "$TARGET_OS" == "ios" ]]; then
 	SOUND_BACKEND="miniaudio"
 fi
-./premake5 gmake2 $PREMAKE_FLAGS $BUNDLED_FONT --no-core=true --vcpkg-root=$VCPKG_ROOT --sound=$SOUND_BACKEND --no-joystick=true --pics=\"$PICS_URL\" --fields=\"$FIELDS_URL\" --covers=\"$COVERS_URL\" --discord=\"$DISCORD_APP_ID\" --update-url=\"$UPDATE_URL\"
+./premake5 gmake2 $PREMAKE_FLAGS $BUNDLED_FONT --no-core=true --vcpkg-root=$VCPKG_ROOT --sound=$SOUND_BACKEND --no-joystick=true --pics=\"$PICS_URL\" --fields=\"$FIELDS_URL\" --covers=\"$COVERS_URL\" --discord=\"$DISCORD_APP_ID\" --update-url=\"$UPDATE_URL\" --server_url=\\\"$SERVER_URL\\\"
 PROCS=""
 if [[ "$TRAVIS_OS_NAME" == "macosx" ]]; then
     PROCS=$(sysctl -n hw.ncpu)
