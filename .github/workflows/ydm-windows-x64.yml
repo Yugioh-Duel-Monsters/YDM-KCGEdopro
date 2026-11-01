@@ -51,7 +51,7 @@ jobs:
       - name: Stage FFmpeg headers, import libraries and runtime DLLs
         shell: pwsh
         run: |
-          $root = "C:\\vcpkg\\installed\\x64-windows"
+          $root = "C:/vcpkg/installed/x64-windows"
           $destination = "ffmpeg"
           New-Item -ItemType Directory -Force -Path "$destination/include", "$destination/lib", "$destination/bin" | Out-Null
           $headers = @("libavcodec", "libavdevice", "libavfilter", "libavformat", "libavutil", "libswresample", "libswscale")
