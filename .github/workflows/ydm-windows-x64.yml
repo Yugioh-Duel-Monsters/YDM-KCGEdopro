@@ -27,6 +27,7 @@ jobs:
       VS_GEN: vs2022
       SERVER_URL: 127.0.0.1
       DXSDK_DIR: C:/d3d9sdk/
+      FFMPEG_ROOT: ${{ github.workspace }}/ffmpeg
     steps:
       - uses: actions/checkout@v4
         with:
