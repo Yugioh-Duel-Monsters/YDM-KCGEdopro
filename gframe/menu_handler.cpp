@@ -949,7 +949,7 @@ bool MenuHandler::OnEvent(const irr::SEvent& event) {
                 }
                 std::wstring repinfo;
 				time_t curtime = replay.pheader.base.timestamp;
-				repinfo.append(epro::format(L"{:%Y/%m/%d %H:%M:%S}\n", fmt::localtime(curtime)));
+				repinfo.append(epro::format(L"{:%Y/%m/%d %H:%M:%S}\n", epro::localtime(curtime)));
 				for(int i = 0; i < replay.GetPlayersCount(0); i++) {
 					repinfo.append(names[i] + L"\n");
 				}
@@ -1574,7 +1574,7 @@ bool MenuHandler::OnEvent(const irr::SEvent& event) {
                 }
                 std::wstring repinfo;
 				time_t curtime = replay.pheader.base.timestamp;
-				repinfo.append(epro::format(L"{:%Y/%m/%d %H:%M:%S}\n", fmt::localtime(curtime)));
+				repinfo.append(epro::format(L"{:%Y/%m/%d %H:%M:%S}\n", epro::localtime(curtime)));
 				for(int i = 0; i < replay.GetPlayersCount(0); i++) {
 					repinfo.append(names[i] + L"\n");
 				}
