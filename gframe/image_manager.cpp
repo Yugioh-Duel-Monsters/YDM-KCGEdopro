@@ -289,8 +289,6 @@ bool ImageManager::Initial() {
     icon[0] = loadTextureAnySize(EPRO_TEXT("character/player/mini_icon"sv));
 	RefreshRandomImageList();
 
-    QQ = driver->getTexture(EPRO_TEXT("./textures/QQ.png"));
-    ASSERT_TEXTURE_LOADED(QQ, "QQ");
     cardchant0 = loadTextureFixedSize(EPRO_TEXT("summon_chant"sv), 15, 15);
     cardchant1 = loadTextureFixedSize(EPRO_TEXT("attack_chant"sv), 15, 15);
     cardchant2 = loadTextureFixedSize(EPRO_TEXT("activate_chant"sv), 15, 15);
