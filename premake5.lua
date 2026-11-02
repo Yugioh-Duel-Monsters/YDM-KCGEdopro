@@ -51,6 +51,11 @@ newoption {
 	description = "Path to vcpkg installation"
 }
 newoption {
+	trigger = "ffmpeg-root",
+	value = "path",
+	description = "Path to staged FFmpeg headers and libraries"
+}
+newoption {
 	trigger = "vcpkg-triplet",
 	value = "triplet",
 	description = "Base vcpkg triplet to use, example: \"-mingw-static\""
