@@ -24,7 +24,11 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
 		MSBUILD_PLATFORM=x64
 	fi
 	VS_GEN=${VS_GEN:-vs2022}
-	./premake5 "$VS_GEN" --architecture="$ARCH" $BUNDLED_FONT --no-core=true --sound=miniaudio,sfml --no-joystick=true --pics=\"$PICS_URL\" --fields=\"$FIELDS_URL\" --covers=\"$COVERS_URL\" --discord=\"$DISCORD_APP_ID\" --server_url=\"$SERVER_URL\"
+	FFMPEG_FLAGS=()
+	if [[ -n "${FFMPEG_ROOT:-}" ]]; then
+		FFMPEG_FLAGS+=(--ffmpeg-root="$FFMPEG_ROOT")
+	fi
+	./premake5 "$VS_GEN" --architecture="$ARCH" "${FFMPEG_FLAGS[@]}" $BUNDLED_FONT --no-core=true --sound=miniaudio,sfml --no-joystick=true --pics=\"$PICS_URL\" --fields=\"$FIELDS_URL\" --covers=\"$COVERS_URL\" --discord=\"$DISCORD_APP_ID\" --server_url=\"$SERVER_URL\"
 	msbuild.exe -m -p:Configuration=$BUILD_CONFIG -p:Platform=$MSBUILD_PLATFORM ./build/ygo.sln -t:ygoprodll -verbosity:minimal -p:EchoOff=true
 	exit 0
 fi
