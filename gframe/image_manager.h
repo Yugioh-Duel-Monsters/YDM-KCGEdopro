@@ -242,7 +242,6 @@ public:
 	A(tsubcharacterselect3)
 	A(tsubcharacterselect4)
 	A(tsubcharacterselect5)
-	A(QQ)
 	A(modeBody[CHAPTER])
     A(head[CHARACTER_STORY+1]) //story icon
 	A(modeHead[6])
