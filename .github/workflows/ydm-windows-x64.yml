@@ -93,7 +93,7 @@ jobs:
         run: |
           ./travis/install-premake5.sh
           cd ocgcore
-          ../premake5 vs2022 --platform=x64
+          ../premake5 vs2022 --platforms=x64
           msbuild.exe -m -p:Configuration=Release -p:Platform=x64 ./build/ocgcore.sln -t:ocgcoreshared -verbosity:minimal -p:EchoOff=true
           cd ..
           mkdir -p bin/x64/release
