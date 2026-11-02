@@ -110,6 +110,14 @@ if [[ "$PLATFORM" == "windows" ]]; then
 	copy_if_exists ygoprodll.exe
 	copy_if_exists Edopro-KCG.exe
 	copy_if_exists ocgcore.dll
+	# KCG client loads these runtime fonts from ./fonts at startup.
+	if [[ ! -f fonts/BroadbandRegular.ttf || ! -f fonts/ygo.ttf ]]; then
+		echo "Required KCG runtime fonts are missing from the source tree" >&2
+		exit 1
+	fi
+	cp -R fonts deploy/fonts
+	test -f deploy/fonts/BroadbandRegular.ttf
+	test -f deploy/fonts/ygo.ttf
 	compress_if_exist ygoprodll.exe
 	compress_if_exist Edopro-KCG.exe
 	copy_compressed_if_exists ygoprodll.pdb
