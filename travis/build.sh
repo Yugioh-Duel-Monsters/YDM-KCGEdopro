@@ -13,6 +13,10 @@ VCPKG_TRIPLET=${VCPKG_TRIPLET:-""}
 EXTRA_CFLAGS=${EXTRA_CFLAGS:-""}
 SERVER_URL=${SERVER_URL:-"127.0.0.1"}
 BUNDLED_FONT=""
+DISCORD_FLAGS=()
+if [[ -n "$DISCORD_APP_ID" ]]; then
+	DISCORD_FLAGS+=(--discord=\\\"$DISCORD_APP_ID\\\")
+fi
 if [[ -f "NotoSansJP-Regular.otf" ]]; then
 	BUNDLED_FONT="--bundled-font=NotoSansJP-Regular.otf"
 fi
@@ -28,7 +32,7 @@ if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
 	if [[ -n "${FFMPEG_ROOT:-}" ]]; then
 		FFMPEG_FLAGS+=(--ffmpeg-root="$FFMPEG_ROOT")
 	fi
-	./premake5 "$VS_GEN" --architecture="$ARCH" "${FFMPEG_FLAGS[@]}" $BUNDLED_FONT --no-core=true --sound=miniaudio,sfml --no-joystick=true --pics=\"$PICS_URL\" --fields=\"$FIELDS_URL\" --covers=\"$COVERS_URL\" --discord=\"$DISCORD_APP_ID\" --server_url=\"$SERVER_URL\"
+	./premake5 "$VS_GEN" --architecture="$ARCH" "${FFMPEG_FLAGS[@]}" $BUNDLED_FONT --no-core=true --sound=miniaudio,sfml --no-joystick=true --pics=\"$PICS_URL\" --fields=\"$FIELDS_URL\" --covers=\"$COVERS_URL\" ${DISCORD_FLAGS[@]} --server_url=\"$SERVER_URL\"
 	msbuild.exe -m -p:Configuration=$BUILD_CONFIG -p:Platform=$MSBUILD_PLATFORM ./build/ygo.sln -t:ygoprodll -verbosity:minimal -p:EchoOff=true
 	exit 0
 fi
@@ -55,7 +59,7 @@ fi
 if [[ "$TARGET_OS" == "ios" ]]; then
 	SOUND_BACKEND="miniaudio"
 fi
-./premake5 gmake2 $PREMAKE_FLAGS $BUNDLED_FONT --no-core=true --vcpkg-root=$VCPKG_ROOT --sound=$SOUND_BACKEND --no-joystick=true --pics=\"$PICS_URL\" --fields=\"$FIELDS_URL\" --covers=\"$COVERS_URL\" --discord=\"$DISCORD_APP_ID\" --update-url=\"$UPDATE_URL\" --server_url=\\\"$SERVER_URL\\\"
+./premake5 gmake2 $PREMAKE_FLAGS $BUNDLED_FONT --no-core=true --vcpkg-root=$VCPKG_ROOT --sound=$SOUND_BACKEND --no-joystick=true --pics=\"$PICS_URL\" --fields=\"$FIELDS_URL\" --covers=\"$COVERS_URL\" ${DISCORD_FLAGS[@]} --update-url=\"$UPDATE_URL\" --server_url=\\\"$SERVER_URL\\\"
 PROCS=""
 if [[ "$TRAVIS_OS_NAME" == "macosx" ]]; then
     PROCS=$(sysctl -n hw.ncpu)
