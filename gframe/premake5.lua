@@ -288,8 +288,13 @@ local ygopro_config=function(static_core)
     	-- includedirs{ "../opencv2/include" }
     	-- libdirs{ "../opencv2/lib" }
     	-- links "opencv_world470"
-    	includedirs{ "../ffmpeg/include" }
-    	libdirs{ "../ffmpeg/lib" }
+		if _OPTIONS["ffmpeg-root"] then
+			externalincludedirs { _OPTIONS["ffmpeg-root"] .. "/include" }
+			libdirs { _OPTIONS["ffmpeg-root"] .. "/lib" }
+		else
+			includedirs { "../ffmpeg/include" }
+			libdirs { "../ffmpeg/lib" }
+		end
 		links { "avcodec", "avdevice", "avfilter", "avformat", "avutil", "swresample", "swscale" }
 
 	filter {}
