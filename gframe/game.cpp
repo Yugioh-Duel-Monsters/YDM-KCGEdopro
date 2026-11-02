@@ -793,7 +793,6 @@ void Game::Initialize() {
 	wQQ->setDrawBackground(false);
 	btnQQ = irr::gui::CGUIImageButton::addImageButton(env, Scale(0, 0, 90, 130), wQQ, BUTTON_QQ);
 	btnQQ->setImageSize(Scale(0, 0, 90, 130).getSize());
-	btnQQ->setImage(imageManager.QQ);
 	#ifndef EK
     wQQ->setVisible(false);
 	#endif
