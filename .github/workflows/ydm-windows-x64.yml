@@ -88,11 +88,21 @@ jobs:
           if (-not (Test-Path "$destination/include/AL/al.h")) { throw "OpenAL headers are missing" }
           if (-not (Test-Path "$destination/include/FLAC/stream_decoder.h")) { throw "FLAC headers are missing" }
           if (-not (Test-Path "$destination/include/vorbis/vorbisfile.h")) { throw "Vorbis headers are missing" }
-      - name: Build matching client and core
+      - name: Build matching KCG core DLL
         shell: bash
         run: |
           ./travis/install-premake5.sh
-          ./travis/build.sh
+          cd ocgcore
+          ../premake5 vs2022 --architecture=x64
+          msbuild.exe -m -p:Configuration=Release -p:Platform=x64 ./build/ocgcore.sln -t:ocgcoreshared -verbosity:minimal -p:EchoOff=true
+          cd ..
+          mkdir -p bin/x64/release
+          cp ocgcore/bin/x64/release/ocgcore.dll bin/x64/release/ocgcore.dll
+          test -f bin/x64/release/ocgcore.dll
+
+      - name: Build EDOPro client
+        shell: bash
+        run: ./travis/build.sh
 
       - name: Package Windows x64 client
         shell: bash
