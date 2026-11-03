@@ -831,9 +831,8 @@ void Game::Initialize() {
 	int height = 170;
 	int height2 = 30;
 #ifndef EK
-	cbpics->setVisible(false);
-	cbpics->setSelected(0);
-	btnFolder->setVisible(false);
+	// These controls belong to the Settings UI and are created later.
+	// Do not access them here during main-menu initialization.
 
     height += 35;
 	offset += 35;
